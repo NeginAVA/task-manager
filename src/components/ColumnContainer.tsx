@@ -27,7 +27,7 @@ const ColumnContainer = (props: Props) => {
     if (isDragging) {
         return (
             <div ref={setNodeRef} style={style}
-                 className="bg-columnBackground w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col">
+                 className="bg-columnBackground w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col border-2 border-rose-500 opacity-40">
             </div>
         )
     }
