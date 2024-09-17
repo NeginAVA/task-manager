@@ -66,10 +66,14 @@ const Board = () => {
         setTasks([...tasks,newTask]);
     }
 
+    function deleteTask(id:Id){
+    const newTasks=tasks.filter(task=>task.id !== id);
+    setTasks(newTasks);
+    }
+
     function onDragStart(event: DragStartEvent) {
-        console.log("onDragStart", event);
-        if (event.active.data.current.type === "Column") {
-            setActiveColumn(event.active.data.current.column);
+        if (event.active.data.current?.type === "Column") {
+            setActiveColumn(event?.active.data.current.column);
             return;
         }
     }
@@ -108,6 +112,7 @@ const Board = () => {
                                     deleteColumn={deleteColumn}
                                     updateColumn={updateColumn}
                                     createTask={createTask}
+                                    deleteTask={deleteTask}
                                     tasks={tasks.filter(task=>task.columnId===col.id)}
                                 />
                             ))}
@@ -128,6 +133,8 @@ const Board = () => {
                                 deleteColumn={deleteColumn}
                                 updateColumn={updateColumn}
                                 createTask={createTask}
+                                deleteTask={deleteTask}
+                                tasks={tasks.filter(task=>task.columnId===activeColumn.id)}
                             />
                         )}
                     </DragOverlay>,

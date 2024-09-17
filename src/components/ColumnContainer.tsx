@@ -4,17 +4,19 @@ import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {useState} from "react";
 import PlusCircleIcon from "../icons/PlusCircleIcon.tsx";
+import TaskCard from "./TaskCard.tsx";
 
 interface Props {
     column: Column;
     deleteColumn: (id: Id) => void;
     updateColumn: (id: Id, title: string) => void;
     createTask: (columnId: Id) => void;
+    deleteTask: (id: Id) => void;
     tasks: Task[];
 }
 
 const ColumnContainer = (props: Props) => {
-    const {column, deleteColumn, updateColumn,createTask,tasks} = props;
+    const {column, deleteColumn, updateColumn,createTask,tasks,deleteTask} = props;
 
     const [isEditing, setEditing] = useState(false);
 
@@ -84,11 +86,13 @@ const ColumnContainer = (props: Props) => {
                     <TrashIcon/>
                 </button>
             </div>
-            <div className="flex flex-grow">
+            {/*Tasks List*/}
+            <div className="flex flex-grow flex-col gap-4 p-2 over-x-hidden overflow-y-auto">
                 {tasks.map((task) => (
-                    <div key={task.id}>{task.title}</div>
+                    <TaskCard key={task.id} task={task} deleteTask={deleteTask}/>
                 ))}
             </div>
+
             <button
                 onClick={() => createTask(column.id)}
                 className="flex gap-2 items-center border-columnBackground border-2 rounded-md p-3 border-x-columnBackground hover:bg-mainBackground hover:text-rose-500 active:bg-black">
