@@ -1,17 +1,20 @@
-import {Column, Id} from "../types.ts";
+import {Column, Id, Task} from "../types.ts";
 import TrashIcon from "../icons/TrashIcon.tsx";
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {useState} from "react";
+import PlusCircleIcon from "../icons/PlusCircleIcon.tsx";
 
 interface Props {
     column: Column;
     deleteColumn: (id: Id) => void;
-    updateColumn: (id: Id,title:string) => void;
+    updateColumn: (id: Id, title: string) => void;
+    createTask: (columnId: Id) => void;
+    tasks: Task[];
 }
 
 const ColumnContainer = (props: Props) => {
-    const {column, deleteColumn,updateColumn} = props;
+    const {column, deleteColumn, updateColumn,createTask,tasks} = props;
 
     const [isEditing, setEditing] = useState(false);
 
@@ -21,14 +24,15 @@ const ColumnContainer = (props: Props) => {
         listeners,
         transform,
         transition,
-        isDragging} =
+        isDragging
+    } =
         useSortable({
             id: column.id,
             data: {
                 type: "Column",
                 column,
             },
-            disabled:isEditing,
+            disabled: isEditing,
         })
 
     const style = {
@@ -63,13 +67,13 @@ const ColumnContainer = (props: Props) => {
                         <input
                             className="bg-black focus:border-rose-500 border rounded outline-none px-2"
                             value={column.title}
-                            onChange={e=>updateColumn(column.id,e.target.value)}
+                            onChange={e => updateColumn(column.id, e.target.value)}
                             autoFocus
                             onBlur={() => {
                                 setEditing(false)
                             }}
-                            onKeyDown={(e)=>{
-                                if(e.key !== "Enter") return;
+                            onKeyDown={(e) => {
+                                if (e.key !== "Enter") return;
                                 setEditing(false)
                             }}
                         />)}
@@ -80,7 +84,17 @@ const ColumnContainer = (props: Props) => {
                     <TrashIcon/>
                 </button>
             </div>
-            <div className="flex flex-grow">Content</div>
+            <div className="flex flex-grow">
+                {tasks.map((task) => (
+                    <div key={task.id}>{task.title}</div>
+                ))}
+            </div>
+            <button
+                onClick={() => createTask(column.id)}
+                className="flex gap-2 items-center border-columnBackground border-2 rounded-md p-3 border-x-columnBackground hover:bg-mainBackground hover:text-rose-500 active:bg-black">
+                <PlusCircleIcon/>
+                Add Task
+            </button>
         </div>
     );
 };

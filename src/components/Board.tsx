@@ -1,6 +1,6 @@
 import PlusIcon from "../icons/PlusIcon.tsx";
 import {useMemo, useState} from "react";
-import {Column, Id} from "../types.ts";
+import {Column, Id, Task} from "../types.ts";
 import ColumnContainer from "./ColumnContainer.tsx";
 import {
     DndContext,
@@ -17,6 +17,8 @@ import {createPortal} from "react-dom";
 const Board = () => {
     const [columns, setColumns] = useState<Column[]>([]);
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+   const [tasks, setTasks] = useState<Task[]>([]);
+
     const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
     const sensors=useSensors(
@@ -54,6 +56,16 @@ const Board = () => {
         setColumns(newColumns);
     }
 
+    function createTask(columnId: Id) {
+        const newTask:Task = {
+            id: generateId(),
+            columnId,
+            title:`Task ${tasks.length + 1}`,
+        }
+
+        setTasks([...tasks,newTask]);
+    }
+
     function onDragStart(event: DragStartEvent) {
         console.log("onDragStart", event);
         if (event.active.data.current.type === "Column") {
@@ -84,7 +96,7 @@ const Board = () => {
     }
 
     return (
-        <div className="mx-auto flex min-h-screen w-full items-center overflow-x-auto">
+        <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto px-10">
             <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
                 <div className="mx-auto flex gap-4">
                     <div className="flex gap-4">
@@ -95,6 +107,8 @@ const Board = () => {
                                     column={col}
                                     deleteColumn={deleteColumn}
                                     updateColumn={updateColumn}
+                                    createTask={createTask}
+                                    tasks={tasks.filter(task=>task.columnId===col.id)}
                                 />
                             ))}
                         </SortableContext>
@@ -113,6 +127,7 @@ const Board = () => {
                                 column={activeColumn}
                                 deleteColumn={deleteColumn}
                                 updateColumn={updateColumn}
+                                createTask={createTask}
                             />
                         )}
                     </DragOverlay>,
