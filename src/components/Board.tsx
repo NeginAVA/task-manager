@@ -2,12 +2,14 @@ import PlusIcon from "../icons/PlusIcon.tsx";
 import {useMemo, useState} from "react";
 import {Column, Id} from "../types.ts";
 import ColumnContainer from "./ColumnContainer.tsx";
-import {DndContext, DragStartEvent} from "@dnd-kit/core";
+import {DndContext, DragOverlay, DragStartEvent} from "@dnd-kit/core";
 import {SortableContext} from "@dnd-kit/sortable";
+import {createPortal} from "react-dom";
 
 const Board = () => {
     const [columns, setColumns] = useState<Column[]>([]);
-    const columnsId = useMemo(() => columns.map(col => col.id),[columns]);
+    const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+    const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
     function createNewColumn() {
         const columnToAdd: Column = {
@@ -28,8 +30,12 @@ const Board = () => {
         setColumns(filteredColumns);
     }
 
-    function onDragStart(event:DragStartEvent){
+    function onDragStart(event: DragStartEvent) {
         console.log("onDragStart", event);
+        if (event.active.data.current.type === "Column") {
+            setActiveColumn(event.active.data.current.column);
+            return;
+        }
     }
 
     return (
@@ -50,6 +56,12 @@ const Board = () => {
                         Add Column
                     </button>
                 </div>
+                {createPortal(
+                    <DragOverlay>
+                        {activeColumn && (<ColumnContainer column={activeColumn} deleteColumn={deleteColumn}/>)}
+                    </DragOverlay>,
+                    document.body
+                )}
             </DndContext>
         </div>
     );
