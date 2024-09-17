@@ -13,10 +13,11 @@ interface Props {
     createTask: (columnId: Id) => void;
     deleteTask: (id: Id) => void;
     tasks: Task[];
+    editTask: (id: Id, title: string) => void;
 }
 
 const ColumnContainer = (props: Props) => {
-    const {column, deleteColumn, updateColumn,createTask,tasks,deleteTask} = props;
+    const {column, deleteColumn, updateColumn,createTask,tasks,deleteTask,editTask} = props;
 
     const [isEditing, setEditing] = useState(false);
 
@@ -89,7 +90,7 @@ const ColumnContainer = (props: Props) => {
             {/*Tasks List*/}
             <div className="flex flex-grow flex-col gap-4 p-2 over-x-hidden overflow-y-auto">
                 {tasks.map((task) => (
-                    <TaskCard key={task.id} task={task} deleteTask={deleteTask}/>
+                    <TaskCard key={task.id} task={task} deleteTask={deleteTask} editTask={editTask}/>
                 ))}
             </div>
 

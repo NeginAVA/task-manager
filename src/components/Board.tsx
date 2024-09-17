@@ -71,6 +71,14 @@ const Board = () => {
     setTasks(newTasks);
     }
 
+    function editTask(id: Id, title: string) {
+        const newTasks=tasks.map(task=>{
+            if(task.id !== id) return task;
+            return {...task, title};
+        });
+        setTasks(newTasks)
+    }
+
     function onDragStart(event: DragStartEvent) {
         if (event.active.data.current?.type === "Column") {
             setActiveColumn(event?.active.data.current.column);
@@ -114,6 +122,7 @@ const Board = () => {
                                     createTask={createTask}
                                     deleteTask={deleteTask}
                                     tasks={tasks.filter(task=>task.columnId===col.id)}
+                                    editTask={editTask}
                                 />
                             ))}
                         </SortableContext>
@@ -135,6 +144,7 @@ const Board = () => {
                                 createTask={createTask}
                                 deleteTask={deleteTask}
                                 tasks={tasks.filter(task=>task.columnId===activeColumn.id)}
+                                editTask={editTask}
                             />
                         )}
                     </DragOverlay>,
