@@ -17,7 +17,7 @@ import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard.tsx";
 
 const Board = () => {
-    // Initialize columns with the default 'Todo', 'Doing', and 'Done'
+    // Initialize columns with the default cards
     const [columns, setColumns] = useState<Column[]>([
         { id: 1, title: "Todo" },
         { id: 2, title: "Doing" },
