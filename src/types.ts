@@ -11,4 +11,5 @@ export type Task = {
     title: string,
     createdAt: Date,
     modifiedAt: Date,
+    deadline: Date | null,
 }

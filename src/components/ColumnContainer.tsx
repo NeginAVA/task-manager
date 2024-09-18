@@ -13,7 +13,7 @@ interface Props {
     createTask: (columnId: Id) => void;
     deleteTask: (id: Id) => void;
     tasks: Task[];
-    editTask: (id: Id, title: string) => void;
+    editTask: (id: Id, title: string, deadline: Date | null) => void;
 }
 
 const ColumnContainer = (props: Props) => {
@@ -21,9 +21,9 @@ const ColumnContainer = (props: Props) => {
 
     const [isEditing, setEditing] = useState(false);
 
-    const tasksIds=useMemo(()=>{
-        return tasks.map(task=>task.id);
-    },[tasks]);
+    const tasksIds = useMemo(() => {
+        return tasks.map(task => task.id);
+    }, [tasks]);
 
     const {
         setNodeRef,
@@ -92,11 +92,11 @@ const ColumnContainer = (props: Props) => {
             </div>
             {/*Tasks List*/}
             <div className="flex flex-grow flex-col gap-4 p-2 over-x-hidden overflow-y-auto">
-               <SortableContext items={tasksIds}>
-                   {tasks.map((task) => (
-                       <TaskCard key={task.id} task={task} deleteTask={deleteTask} editTask={editTask}/>
-                   ))}
-               </SortableContext>
+                <SortableContext items={tasksIds}>
+                    {tasks.map((task) => (
+                        <TaskCard key={task.id} task={task} deleteTask={deleteTask} editTask={editTask}/>
+                    ))}
+                </SortableContext>
             </div>
 
             <button
