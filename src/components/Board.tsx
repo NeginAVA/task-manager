@@ -1,48 +1,54 @@
 import PlusIcon from "../icons/PlusIcon.tsx";
-import {useMemo, useState} from "react";
-import {Column, Id, Task} from "../types.ts";
+import { useMemo, useState } from "react";
+import { Column, Id, Task } from "../types.ts";
 import ColumnContainer from "./ColumnContainer.tsx";
 import {
     DndContext,
-    DragEndEvent, DragOverEvent,
+    DragEndEvent,
+    DragOverEvent,
     DragOverlay,
     DragStartEvent,
     PointerSensor,
     useSensor,
-    useSensors
+    useSensors,
 } from "@dnd-kit/core";
-import {arrayMove, SortableContext} from "@dnd-kit/sortable";
-import {createPortal} from "react-dom";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard.tsx";
 
 const Board = () => {
-    const [columns, setColumns] = useState<Column[]>([]);
+    // Initialize columns with the default 'Todo', 'Doing', and 'Done'
+    const [columns, setColumns] = useState<Column[]>([
+        { id: 1, title: "Todo" },
+        { id: 2, title: "Doing" },
+        { id: 3, title: "Done" },
+    ]);
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-    const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
+    const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
                 distance: 5,
-            }
+            },
         })
-    )
+    );
 
     function createNewColumn() {
         const columnToAdd: Column = {
             id: generateId(),
             title: `Column ${columns.length + 1}`,
-        }
+        };
 
         setColumns([...columns, columnToAdd]);
     }
 
     function generateId() {
-        //     Generate a random number between 0 and 10000
-        return Math.floor(Math.random() * 1000);
+        // Generate a random number between 1000 and 10000 for new columns
+        return Math.floor(Math.random() * 9000) + 1000;
     }
 
     function deleteColumn(id: Id) {
@@ -51,13 +57,13 @@ const Board = () => {
     }
 
     function updateColumn(id: Id, title: string) {
-        const newColumns = columns.map(col => {
+        const newColumns = columns.map((col) => {
             if (col.id !== id) return col;
-            return {...col, title};
-        })
+            return { ...col, title };
+        });
         setColumns(newColumns);
 
-        const newTasks =tasks.filter((task) => task.columnId !== id);
+        const newTasks = tasks.filter((task) => task.columnId !== id);
         setTasks(newTasks);
     }
 
@@ -66,22 +72,22 @@ const Board = () => {
             id: generateId(),
             columnId,
             title: `Task ${tasks.length + 1}`,
-        }
+        };
 
         setTasks([...tasks, newTask]);
     }
 
     function deleteTask(id: Id) {
-        const newTasks = tasks.filter(task => task.id !== id);
+        const newTasks = tasks.filter((task) => task.id !== id);
         setTasks(newTasks);
     }
 
     function editTask(id: Id, title: string) {
-        const newTasks = tasks.map(task => {
+        const newTasks = tasks.map((task) => {
             if (task.id !== id) return task;
-            return {...task, title};
+            return { ...task, title };
         });
-        setTasks(newTasks)
+        setTasks(newTasks);
     }
 
     function onDragStart(event: DragStartEvent) {
@@ -99,7 +105,7 @@ const Board = () => {
         setActiveColumn(null);
         setActiveTask(null);
 
-        const {active, over} = event;
+        const { active, over } = event;
         if (!over) return;
 
         const activeId = active.id;
@@ -107,17 +113,12 @@ const Board = () => {
 
         if (activeId === overId) return;
 
-        setColumns(columns => {
-            const activeColumnIndex = columns.findIndex(
-                col => col.id === activeId
-            );
-
-            const overColumnIndex = columns.findIndex(
-                col => col.id === overId
-            );
+        setColumns((columns) => {
+            const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+            const overColumnIndex = columns.findIndex((col) => col.id === overId);
 
             return arrayMove(columns, activeColumnIndex, overColumnIndex);
-        })
+        });
     }
 
     function onDragOver(event: DragOverEvent) {
@@ -181,7 +182,7 @@ const Board = () => {
                                     updateColumn={updateColumn}
                                     createTask={createTask}
                                     deleteTask={deleteTask}
-                                    tasks={tasks.filter(task => task.columnId === col.id)}
+                                    tasks={tasks.filter((task) => task.columnId === col.id)}
                                     editTask={editTask}
                                 />
                             ))}
@@ -189,8 +190,9 @@ const Board = () => {
                     </div>
                     <button
                         onClick={() => createNewColumn()}
-                        className="flex gap-2 h-[60px] w-[350px] min-w-[350px] rounded-lg bg-mainBackground border-2 border-columnBackground p-4 ring-rose-500 hover:ring-2">
-                        <PlusIcon/>
+                        className="flex gap-2 h-[60px] w-[350px] min-w-[350px] rounded-lg bg-mainBackground border-2 border-columnBackground p-4 ring-rose-500 hover:ring-2"
+                    >
+                        <PlusIcon />
                         Add Column
                     </button>
                 </div>
@@ -203,11 +205,19 @@ const Board = () => {
                                 updateColumn={updateColumn}
                                 createTask={createTask}
                                 deleteTask={deleteTask}
-                                tasks={tasks.filter(task => task.columnId === activeColumn.id)}
+                                tasks={tasks.filter(
+                                    (task) => task.columnId === activeColumn.id
+                                )}
                                 editTask={editTask}
                             />
                         )}
-                        {activeTask && <TaskCard task={activeTask} deleteTask={deleteTask} editTask={editTask}/>}
+                        {activeTask && (
+                            <TaskCard
+                                task={activeTask}
+                                deleteTask={deleteTask}
+                                editTask={editTask}
+                            />
+                        )}
                     </DragOverlay>,
                     document.body
                 )}
