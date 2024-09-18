@@ -7,6 +7,8 @@ export type Column = {
 
 export type Task = {
     id: Id,
-    columnId:Id,
+    columnId: Id,
     title: string,
+    createdAt: Date,
+    modifiedAt: Date,
 }

@@ -68,10 +68,13 @@ const Board = () => {
     }
 
     function createTask(columnId: Id) {
+        const currentTime = new Date();
         const newTask: Task = {
             id: generateId(),
             columnId,
             title: `Task ${tasks.length + 1}`,
+            createdAt: currentTime,
+            modifiedAt: currentTime,
         };
 
         setTasks([...tasks, newTask]);
