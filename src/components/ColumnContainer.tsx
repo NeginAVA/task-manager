@@ -65,9 +65,6 @@ const ColumnContainer = (props: Props) => {
                 onClick={() => setEditing(true)}
                 className="flex bg-mainBackground text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-bold border-4 border-columnBackground items-center justify-between">
                 <div className="flex gap-2 items-center">
-                    <div
-                        className="flex justify-center items-center px-2.5 py-2 bg-columnBackground text-sm rounded-full">0
-                    </div>
                     {/*You can edit the column title by simply clicking on it*/}
                     {!isEditing ? column.title : (
                         <input
