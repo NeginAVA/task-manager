@@ -1,8 +1,8 @@
 import {Column, Id, Task} from "../types.ts";
 import TrashIcon from "../icons/TrashIcon.tsx";
-import {useSortable} from "@dnd-kit/sortable";
+import {SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import PlusCircleIcon from "../icons/PlusCircleIcon.tsx";
 import TaskCard from "./TaskCard.tsx";
 
@@ -17,9 +17,13 @@ interface Props {
 }
 
 const ColumnContainer = (props: Props) => {
-    const {column, deleteColumn, updateColumn,createTask,tasks,deleteTask,editTask} = props;
+    const {column, deleteColumn, updateColumn, createTask, tasks, deleteTask, editTask} = props;
 
     const [isEditing, setEditing] = useState(false);
+
+    const tasksIds=useMemo(()=>{
+        return tasks.map(task=>task.id);
+    },[tasks]);
 
     const {
         setNodeRef,
@@ -28,15 +32,14 @@ const ColumnContainer = (props: Props) => {
         transform,
         transition,
         isDragging
-    } =
-        useSortable({
-            id: column.id,
-            data: {
-                type: "Column",
-                column,
-            },
-            disabled: isEditing,
-        })
+    } = useSortable({
+        id: column.id,
+        data: {
+            type: "Column",
+            column,
+        },
+        disabled: isEditing,
+    });
 
     const style = {
         transition,
@@ -46,7 +49,7 @@ const ColumnContainer = (props: Props) => {
     if (isDragging) {
         return (
             <div ref={setNodeRef} style={style}
-                 className="bg-columnBackground w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col border-2 border-rose-500 opacity-40">
+                 className="bg-columnBackground w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col border-2 border-rose-500 opacity-30">
             </div>
         )
     }
@@ -89,9 +92,11 @@ const ColumnContainer = (props: Props) => {
             </div>
             {/*Tasks List*/}
             <div className="flex flex-grow flex-col gap-4 p-2 over-x-hidden overflow-y-auto">
-                {tasks.map((task) => (
-                    <TaskCard key={task.id} task={task} deleteTask={deleteTask} editTask={editTask}/>
-                ))}
+               <SortableContext items={tasksIds}>
+                   {tasks.map((task) => (
+                       <TaskCard key={task.id} task={task} deleteTask={deleteTask} editTask={editTask}/>
+                   ))}
+               </SortableContext>
             </div>
 
             <button

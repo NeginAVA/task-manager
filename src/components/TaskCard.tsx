@@ -3,6 +3,8 @@ import TrashIcon from "../icons/TrashIcon.tsx";
 import EditIcon from "../icons/EditIcon.tsx";
 import {useState} from "react";
 import OptionsIcon from "../icons/OptionsIcon.tsx";
+import {useSortable} from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities";
 
 interface Props {
     task: Task;
@@ -14,6 +16,27 @@ const TaskCard = ({task, deleteTask, editTask}: Props) => {
     const [isMouseOver, setIsMouseOver] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+
+    const {
+        setNodeRef,
+        attributes,
+        listeners,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({
+        id: task.id,
+        data: {
+            type: "Task",
+            task,
+        },
+        disabled: isEditMode,
+    });
+
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+    }
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -29,9 +52,22 @@ const TaskCard = ({task, deleteTask, editTask}: Props) => {
         setIsMenuOpen(false);
     };
 
+    if (isDragging) {
+        return (
+            <div ref={setNodeRef}
+                 style={style} className="task bg-mainBackground relative cursor-grab p-2.5 h-20 min-h-20 rounded-xl items-center flex text-left border-2 border-rose-500 opacity-50">
+
+            </div>
+        )
+    }
+
     if (isEditMode) {
         return (
             <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                {...listeners}
                 className="task bg-mainBackground relative cursor-grab p-2.5 h-20 min-h-20 rounded-xl items-center flex text-left hover:ring-2 hover:ring-inset hover:ring-rose-500"
             >
                 <textarea value={task.title}
@@ -56,6 +92,10 @@ const TaskCard = ({task, deleteTask, editTask}: Props) => {
 
     return (
         <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
             onMouseEnter={() => setIsMouseOver(true)}
             onMouseLeave={() => {
                 setIsMouseOver(false);
